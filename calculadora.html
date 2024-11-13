@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan de Inversión</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .calculator {
+      background-color: #2c2c2c;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      width: 420px;
+      text-align: center;
+      margin-top: 50px;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    h1 {
+      font-family: 'Roboto', sans-serif;
+      font-size: 24px;
+      color: #00b4d8;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      color: #b0b0b0;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #b0b0b0;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #444;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .results {
+      margin-top: 30px;
+    }
+
+    .results p {
+      font-size: 16px;
+      color: #b0b0b0;
+    }
+
+    .monthly-results {
+      text-align: left;
+      margin-top: 20px;
+      color: #b0b0b0;
+    }
+
+    .monthly-results h3 {
+      color: #00b4d8;
+    }
+
+    .summary {
+      margin-top: 30px;
+      color: #b0b0b0;
+    }
+
+    .summary p {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 215, 0, 0.8);
+    }
+
+    .note {
+      color: #ff4040;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .vip-note {
+      color: #32cd32;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .platinum-note {
+      color: #ffd700;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    /* Botones de cada cuenta */
+    .plan-button {
+      width: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    /* Animación en hover para botones de cuenta */
+    .plan-button:hover {
+      transform: scale(1.05);
+    }
+
+    .button-estandar {
+      background-color: #ff8c00;
+    }
+
+    .button-vip {
+      background-color: #32cd32;
+    }
+
+    .button-platino {
+      background-color: #ffd700;
+    }
+
+    /* Estilo de los botones originales */
+    .default-button {
+      background-color: #00b4d8;
+    }
+
+    .default-button:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h1>Plan de Inversión</h1>
+    <h2 id="planType">Habilitada solo para invertir en Forex</h2>
+    
+    <div class="note" id="note">
+      **Nota**: El beneficio mensual es del 5% sobre la inversión inicial, y se aplica un efecto "bola de nieve" con un incremento del 10% cada mes sobre el monto acumulado.
+    </div>
+    
+    <p style="color: #00b4d8;" id="minDepositNote">Nota: La cantidad mínima a depositar es 5000 euros.</p>
+    
+    <!-- Plan Buttons -->
+    <button class="plan-button button-estandar" onclick="setPlan('estandar')">Cuenta Estándar</button>
+    <button class="plan-button button-vip" onclick="setPlan('vip')">Cuenta VIP</button>
+    <button class="plan-button button-platino" onclick="setPlan('platino')">Cuenta Platino</button>
+    
+    <label for="inversion">Valor a Invertir (en euros):</label>
+    <input type="number" id="inversion" placeholder="Ingrese la inversión inicial">
+    
+    <!-- Botón Calcular Beneficios -->
+    <button class="default-button" onclick="calcularBeneficios()">Calcular Beneficios</button>
+    
+    <div class="results">
+      <p><strong>Beneficio Diario:</strong> <span id="beneficioDiario"></span> €</p>
+      <p><strong>Beneficio Mensual Inicial:</strong> <span id="beneficioMensualInicial"></span> €</p>
+      <p><strong>Beneficio Anual Total:</strong> <span id="beneficioAnual"></span> €</p>
+    </div>
+    
+    <div class="monthly-results" id="beneficiosMensuales"></div>
+    
+    <div class="summary">
+      <p><strong>Suma Total de Dinero a Retirar en 1 Año:</strong> <span id="totalRetirar"></span> €</p>
+    </div>
+
+    <!-- Botón Restaurar -->
+    <button class="default-button" onclick="restaurarInterfaz()">Restaurar</button>
+  </div>
+
+  <script>
+    // Configuraciones de cada cuenta
+    const planes = {
+      estandar: {
+        porcentajeMensual: 0.05,
+        incrementoMensual: 0.10,
+        nota: `**Nota**: El beneficio mensual es del 5% sobre la inversión inicial, y se aplica un efecto "bola de nieve" con un incremento del 10% cada mes sobre el monto acumulado.`,
+        habilitadoPara: "Forex",
+        minimo: 5000
+      },
+      vip: {
+        porcentajeMensual: 0.05,
+        incrementoMensual: 0.12,
+        nota: `**Nota**: El beneficio mensual es del 5% sobre la inversión inicial, y se aplica un efecto "bola de nieve" con un incremento del 12% cada mes sobre el monto acumulado.`,
+        habilitadoPara: "Forex e Índices",
+        minimo: 10000
+      },
+      platino: {
+        porcentajeMensual: 0.05,
+        incrementoMensual: 0.15,
+        nota: `**Nota**: El beneficio mensual es del 5% sobre la inversión inicial, y se aplica un efecto "bola de nieve" con un incremento del 15% cada mes sobre el monto acumulado.`,
+        habilitadoPara: "Forex, Índices, Materias Primas y Criptodivisas",
+        minimo: 25000
+      },
+    };
+
+    function setPlan(plan) {
+      const planData = planes[plan];
+      document.getElementById("planType").innerText = `Habilitada para ${planData.habilitadoPara}`;
+      document.getElementById("note").innerHTML = planData.nota;
+      document.getElementById("minDepositNote").innerText = `Nota: La cantidad mínima a depositar es ${planData.minimo} euros.`;
+
+      if (plan === "vip") {
+        document.getElementById("note").classList.add('vip-note');
+        document.getElementById("note").classList.remove('platinum-note');
+        document.getElementById("note").style.color = '#32cd32';
+      } else if (plan === "platino") {
+        document.getElementById("note").classList.add('platinum-note');
+        document.getElementById("note").classList.remove('vip-note');
+        document.getElementById("note").style.color = '#ffd700';
+      } else {
+        document.getElementById("note").classList.remove('vip-note', 'platinum-note');
+        document.getElementById("note").style.color = '#ff4040';
+      }
+
+      window.planActivo = planData;
+    }
+
+    function calcularBeneficios() {
+      const inversionInicial = parseFloat(document.getElementById("inversion").value);
+      if (isNaN(inversionInicial) || inversionInicial < window.planActivo.minimo) {
+        alert(`La inversión mínima para este plan es ${window.planActivo.minimo} euros.`);
+        return;
+      }
+
+      const porcentajeMensual = window.planActivo.porcentajeMensual;
+      const incrementoMensual = window.planActivo.incrementoMensual;
+
+      let montoAcumulado = inversionInicial;
+      const beneficioMensualInicial = montoAcumulado * porcentajeMensual;
+      const beneficioDiario = beneficioMensualInicial / 30;
+
+      const fechaActual = new Date();
+      let mesActual = fechaActual.getMonth();
+      const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      const mesesDinamicos = [];
+      for (let i = 1; i <= 12; i++) {
+        mesesDinamicos.push(meses[(mesActual + i) % 12]);
+      }
+
+      let beneficioAnual = 0;
+      let detallesMensuales = "";
+      for (let mes = 0; mes < 12; mes++) {
+        let beneficioMensual = montoAcumulado * porcentajeMensual;
+        beneficioAnual += beneficioMensual;
+        montoAcumulado += beneficioMensual;
+        montoAcumulado *= (1 + incrementoMensual);
+        detallesMensuales += `<p><strong>${mesesDinamicos[mes]}:</strong> ${beneficioMensual.toFixed(2)} €</p>`;
+      }
+
+      document.getElementById("beneficioDiario").innerText = beneficioDiario.toFixed(2);
+      document.getElementById("beneficioMensualInicial").innerText = beneficioMensualInicial.toFixed(2);
+      document.getElementById("beneficioAnual").innerText = beneficioAnual.toFixed(2);
+      document.getElementById("beneficiosMensuales").innerHTML = `<h3>Beneficio Mensual (Efecto Bola de Nieve):</h3>${detallesMensuales}`;
+      const totalRetirar = inversionInicial + beneficioAnual;
+      document.getElementById("totalRetirar").innerText = totalRetirar.toFixed(2);
+    }
+
+    function restaurarInterfaz() {
+      document.getElementById("inversion").value = '';
+      document.getElementById("beneficioDiario").innerText = '';
+      document.getElementById("beneficioMensualInicial").innerText = '';
+      document.getElementById("beneficioAnual").innerText = '';
+      document.getElementById("beneficiosMensuales").innerHTML = '';
+      document.getElementById("totalRetirar").innerText = '';
+      setPlan('estandar');
+    }
+
+    // Inicializar la interfaz con el plan estándar
+    window.planActivo = planes.estandar;
+  </script>
+</body>
+</html>
